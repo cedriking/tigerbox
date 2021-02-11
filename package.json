@@ -1,0 +1,35 @@
+{
+  "name": "tigerbox",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/cedriking/tigerbox.git",
+  "author": "Cedrik <cedrik.git@tryninja.io>",
+  "license": "MIT",
+  "keywords": [
+    "tigerbox",
+    "isomorphic",
+    "sandbox",
+    "export",
+    "eval",
+    "plugin",
+    "untrusted",
+    "restricted",
+    "privilliges",
+    "access",
+    "security",
+    "thread",
+    "worker",
+    "process"
+  ],
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/node": "^14.14.25",
+    "jest": "^26.6.3",
+    "prettier": "^2.2.1",
+    "ts-jest": "^26.5.1"
+  }
+}
