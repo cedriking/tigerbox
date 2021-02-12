@@ -3,10 +3,10 @@ export default class WhenAble {
   private handlers: Function[] = [];
 
   emit() {
-    if(!this.emitted) this.emitted = true;
+    if (!this.emitted) this.emitted = true;
 
     let handler: Function;
-    while(handler = this.handlers.pop()) {
+    while ((handler = this.handlers.pop())) {
       setTimeout(handler, 0);
     }
   }
@@ -14,7 +14,7 @@ export default class WhenAble {
   whenEmitted(handler: Function) {
     handler = this.checkHandler(handler);
 
-    if(this.emitted) {
+    if (this.emitted) {
       setTimeout(handler, 0);
     } else {
       this.handlers.push(handler);
@@ -23,8 +23,10 @@ export default class WhenAble {
 
   private checkHandler(handler: Function): Function {
     const type = typeof handler;
-    if(type !== 'function') {
-      throw new Error(`A function may only be subscribed to the event, ${type} was provided instead.`);
+    if (type !== 'function') {
+      throw new Error(
+        `A function may only be subscribed to the event, ${type} was provided instead.`,
+      );
     }
 
     return handler;

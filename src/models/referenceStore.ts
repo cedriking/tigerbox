@@ -25,7 +25,7 @@ export default class ReferenceStore {
 
   private genId(): number {
     let id: number;
-    if(this.indices.length === 1) {
+    if (this.indices.length === 1) {
       id = this.indices[0]++;
     } else {
       id = this.indices.shift();
@@ -35,15 +35,15 @@ export default class ReferenceStore {
   }
 
   private releaseId(id: number) {
-    for(let i = 0; i < this.indices.length; i++) {
-      if(id < this.indices[i]) {
+    for (let i = 0; i < this.indices.length; i++) {
+      if (id < this.indices[i]) {
         this.indices.splice(i, 0, id);
         break;
       }
     }
 
-    for(let i = this.indices.length-1; i >= 0; i--) {
-      if(this.indices[i]-1 === this.indices[i-1]) {
+    for (let i = this.indices.length - 1; i >= 0; i--) {
+      if (this.indices[i] - 1 === this.indices[i - 1]) {
         this.indices.pop();
       } else {
         break;

@@ -1,5 +1,5 @@
-import Connection from "./connection";
-import ReferenceStore from "./referenceStore";
+import Connection from './connection';
+import ReferenceStore from './referenceStore';
 
 export default class TigerboxSite {
   private face: Object = {};
@@ -40,21 +40,21 @@ export default class TigerboxSite {
 
   sendInterface() {
     const api = [];
-    for(let name in this.face) {
-      if(this.face.hasOwnProperty(name)) {
+    for (let name in this.face) {
+      if (this.face.hasOwnProperty(name)) {
         api.push(name);
       }
     }
 
-    this.connection.send({type: 'setInterface', api});
+    this.connection.send({ type: 'setInterface', api });
   }
 
   requestRemote() {
-    this.connection.send({type: 'getInterface'});
+    this.connection.send({ type: 'getInterface' });
   }
 
   disconnect() {
-    this.connection.send({type: 'disconnect'});
+    this.connection.send({ type: 'disconnect' });
     this.connection.disconnect();
   }
 
@@ -65,7 +65,7 @@ export default class TigerboxSite {
   private processMessage(data) {
     let method;
     let args;
-    switch(data.type) {
+    switch (data.type) {
       case 'method':
         method = this.face[data.name];
         args = this.unwrap(data.args);
@@ -95,7 +95,7 @@ export default class TigerboxSite {
 
   private setRemote(names: string[]): void {
     this.remote = {};
-    for(const name of names) {
+    for (const name of names) {
       this.remote[name] = this.genRemoteMethod(name);
     }
 
@@ -103,14 +103,18 @@ export default class TigerboxSite {
     this.reportRemoteSet();
   }
 
-  private genRemoteMethod(name: string) {
+  private genRemoteMethod(name: string, ...args) {
     return () => {
-      this.connection.send({ type: 'method', name, args: this.wrap(arguments) });
+      this.connection.send({
+        type: 'method',
+        name,
+        args: this.wrap(args),
+      });
     };
   }
 
   private reportRemoteSet() {
-    this.connection.send({ type: 'interfaceSetAsRemote'});
+    this.connection.send({ type: 'interfaceSetAsRemote' });
   }
 
   private wrap(...args) {
@@ -118,46 +122,49 @@ export default class TigerboxSite {
     const callbacks = {};
     let isCallbacksPresent = false;
 
-    for(const i in args) {
+    for (const i in args) {
       const arg = args[i];
-      if(typeof arg === 'function') {
+      if (typeof arg === 'function') {
         callbacks[i] = arg;
-        wrapped[i] = {type: 'callback', num: i};
+        wrapped[i] = { type: 'callback', num: i };
         isCallbacksPresent = true;
       } else {
-        wrapped[i] = {type: 'argument', value: arg};
+        wrapped[i] = { type: 'argument', value: arg };
       }
     }
 
-    let result = {args: wrapped, callbackId: null};
-    if(isCallbacksPresent) {
+    let result = { args: wrapped, callbackId: null };
+    if (isCallbacksPresent) {
       result.callbackId = this.store.put(callbacks);
     }
 
     return result;
   }
 
-  private unwrap(args: any) {
+  private unwrap(...args) {
     let called = false;
 
     const once = (cb) => {
       return () => {
-        if(!called) {
+        if (!called) {
           called = true;
-          cb.apply(this, arguments);
+          cb.apply(this, args);
         } else {
-          throw new Error('A callback from this set has already been executed.');
+          throw new Error(
+            'A callback from this set has already been executed.',
+          );
         }
-      }
+      };
     };
 
     const result = [];
-    for(const i in args.args) {
-      const arg = args.args[i];
-      if(arg.type === 'argument') {
+
+    for (const i in args['args']) {
+      const arg = args['args'][i];
+      if (arg.type === 'argument') {
         result.push(arg.value);
       } else {
-        const cb = once(this.genRemoteCallback(args.callbackId, +i));
+        const cb = once(this.genRemoteCallback(args['callbackId'], +i));
         result.push(cb);
       }
     }
@@ -165,10 +172,15 @@ export default class TigerboxSite {
     return result;
   }
 
-  private genRemoteCallback(id: number, argNum: number) {
+  private genRemoteCallback(id: number, argNum: number, ...args) {
     const remoteCallback = () => {
-      this.connection.send({ type: 'callback', id, num: argNum, args: this.wrap(arguments)});
-    }
+      this.connection.send({
+        type: 'callback',
+        id,
+        num: argNum,
+        args: this.wrap(args),
+      });
+    };
 
     return remoteCallback;
   }

@@ -3,14 +3,20 @@ import childProcess from 'child_process';
 export default class BasicConnectionNode {
   private process: childProcess.ChildProcess;
   private isDisconnected: boolean = true;
-  private messageHandler: (m: childProcess.Serializable) => void = (m: childProcess.Serializable) => {};
-  private disconnectHandler: (m: childProcess.Serializable) => void = (m: childProcess.Serializable) => {};
+  private messageHandler: (m: childProcess.Serializable) => void = (
+    m: childProcess.Serializable,
+  ) => {};
+  private disconnectHandler: (m: childProcess.Serializable) => void = (
+    m: childProcess.Serializable,
+  ) => {};
 
   constructor(tigerPath: string) {
-    this.process = childProcess.fork(tigerPath);
+    this.process = childProcess.fork(`${tigerPath}models/pluginNode.ts`);
+
     this.process.on('message', (m) => {
       this.messageHandler(m);
     });
+
     this.process.on('exit', (m) => {
       this.isDisconnected = true;
       this.disconnectHandler(m);
@@ -22,7 +28,7 @@ export default class BasicConnectionNode {
   }
 
   send(data: Object) {
-    if(!this.isDisconnected) {
+    if (!this.isDisconnected) {
       this.process.send(data);
     }
   }
@@ -34,7 +40,7 @@ export default class BasicConnectionNode {
       } catch (e) {
         console.error(e.stack);
       }
-    }
+    };
   }
 
   onDisconnect(handler: (m: childProcess.Serializable) => void) {

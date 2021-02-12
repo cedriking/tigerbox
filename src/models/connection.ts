@@ -1,5 +1,5 @@
-import BasicConnectionNode from "./basicConnectionNode";
-import BasicConnectionWeb from "./basicConnectionWeb";
+import BasicConnectionNode from './basicConnectionNode';
+import BasicConnectionWeb from './basicConnectionWeb';
 
 export default class Connection {
   private platformConnection;
@@ -7,16 +7,16 @@ export default class Connection {
   private executeSuccessCallback: Function = () => {};
   private executeFailureCallback: Function = () => {};
   private messageHandler: Function = () => {};
-  
+
   constructor(tigerPath: string, platformInit, isNode: boolean) {
-    if(isNode) {
+    if (isNode) {
       this.platformConnection = new BasicConnectionNode(tigerPath);
     } else {
       this.platformConnection = new BasicConnectionWeb(tigerPath, platformInit);
     }
 
     this.platformConnection.onMessage((m) => {
-      switch(m.type) {
+      switch (m.type) {
         case 'message':
           this.messageHandler(m.data);
           break;
@@ -44,16 +44,27 @@ export default class Connection {
     return this.platformConnection.dedicatedThread;
   }
 
-  importTigerScript(path: string, successCallback: Function, failureCallback: Function) {
+  importTigerScript(
+    path: string,
+    successCallback: Function,
+    failureCallback: Function,
+  ) {
     const f = () => {};
-    this.importCallbacks[path] = { successCallback: successCallback || f, failureCallback: failureCallback || f};
-    this.platformConnection.send({type: 'importTigerbox', url: path});
+    this.importCallbacks[path] = {
+      successCallback: successCallback || f,
+      failureCallback: failureCallback || f,
+    };
+    this.platformConnection.send({ type: 'importTiger', url: path });
   }
 
-  execute(code: string, successCallback: Function = () => {}, failureCallback: Function = () => {}) {
+  execute(
+    code: string,
+    successCallback: Function = () => {},
+    failureCallback: Function = () => {},
+  ) {
     this.executeSuccessCallback = successCallback;
     this.executeFailureCallback = failureCallback;
-    this.platformConnection.send({type: 'execute', code });
+    this.platformConnection.send({ type: 'execute', code });
   }
 
   onMessage(handler: Function) {
@@ -65,14 +76,14 @@ export default class Connection {
   }
 
   send(data: Object) {
-    this.platformConnection.send({type: 'message', data});
+    this.platformConnection.send({ type: 'message', data });
   }
 
   handleImportSuccess(url) {
     const success = this.importCallbacks[url].successCallback;
     this.importCallbacks[url] = null;
     delete this.importCallbacks[url];
-    
+
     success();
   }
 

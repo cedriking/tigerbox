@@ -1,4 +1,4 @@
-import WhenAble from "./whenable";
+import WhenAble from './whenable';
 
 export default class BasicConnectionWeb {
   private permissions = ['allow-scripts'];
@@ -9,7 +9,7 @@ export default class BasicConnectionWeb {
   private isDisconnected: boolean = false;
 
   constructor(tigerPath: string, platformInit) {
-    if(tigerPath.substr(0, 7).toLocaleLowerCase() === 'file://') {
+    if (tigerPath.substr(0, 7).toLocaleLowerCase() === 'file://') {
       this.permissions.push('allow-same-origin');
     }
 
@@ -23,13 +23,13 @@ export default class BasicConnectionWeb {
     this.isDisconnected = false;
 
     platformInit.whenEmitted(() => {
-      if(!this.isDisconnected) {
+      if (!this.isDisconnected) {
         this.frame = sample.cloneNode(false);
         document.body.appendChild(this.frame);
 
         window.addEventListener('message', (e) => {
-          if(e.source === this.frame.contentWindow) {
-            if(e.data.type === 'initialized') {
+          if (e.source === this.frame.contentWindow) {
+            if (e.data.type === 'initialized') {
               this.isDedicatedThread = e.data.dedicatedThread;
               this.init.emit();
             } else {
@@ -43,10 +43,10 @@ export default class BasicConnectionWeb {
 
   whenInit(handler) {
     this.init.whenEmitted(handler);
-  } 
+  }
 
   send(data: Object) {
-    this.frame.contentWindow.postMessage({type: 'message', data }, '*');
+    this.frame.contentWindow.postMessage({ type: 'message', data }, '*');
   }
 
   onMessage(handler) {
@@ -56,9 +56,9 @@ export default class BasicConnectionWeb {
   onDisconnect() {}
 
   disconnect() {
-    if(!this.isDisconnected) {
+    if (!this.isDisconnected) {
       this.isDisconnected = true;
-      if(typeof this.frame !== 'undefined') {
+      if (typeof this.frame !== 'undefined') {
         this.frame.parentNode.removeChild(this.frame);
       }
     }
