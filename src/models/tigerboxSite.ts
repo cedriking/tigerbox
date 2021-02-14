@@ -2,7 +2,7 @@ import Connection from './connection';
 import ReferenceStore from './referenceStore';
 
 export default class TigerboxSite {
-  private face: Object = {};
+  private api: Object = {};
   private remote = null;
   private remoteUpdateHandler: Function = () => {};
   private getInterfaceHandler: Function = () => {};
@@ -13,8 +13,16 @@ export default class TigerboxSite {
 
   constructor(connection: Connection) {
     this.connection = connection;
-    this.connection.onMessage((data) => this.processMessage(data));
-    this.connection.onDisconnect((m) => this.disconnectHandler(m));
+    this.connection.onMessage((data) => {
+      console.log('message received');
+      console.log(data);
+      this.processMessage(data)
+    });
+    this.connection.onDisconnect((m) => {
+      console.log('disconnect');
+      console.log(m);
+      this.disconnectHandler(m)
+    });
   }
 
   onRemoteUpdate(handler: Function) {
@@ -33,15 +41,15 @@ export default class TigerboxSite {
     this.remote;
   }
 
-  setInterface(face) {
-    this.face = face;
+  setInterface (api: Object) {
+    this.api = api;
     this.sendInterface();
   }
 
   sendInterface() {
     const api = [];
-    for (let name in this.face) {
-      if (this.face.hasOwnProperty(name)) {
+    for (let name in this.api) {
+      if (this.api.hasOwnProperty(name)) {
         api.push(name);
       }
     }
@@ -67,7 +75,7 @@ export default class TigerboxSite {
     let args;
     switch (data.type) {
       case 'method':
-        method = this.face[data.name];
+        method = this.api[data.name];
         args = this.unwrap(data.args);
         method.apply(null, args);
         break;

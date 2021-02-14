@@ -1,7 +1,12 @@
 {
   "compilerOptions": {
-    "lib": ["es6", "DOM"],
+    "target": "es2015",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "./lib",
     "esModuleInterop": true,
-    "downlevelIteration": true
-  }
+    "skipLibCheck": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "**/__tests__/*"]
 }

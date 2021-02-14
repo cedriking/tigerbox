@@ -11,7 +11,7 @@ export default class BasicConnectionNode {
   ) => {};
 
   constructor(tigerPath: string) {
-    this.process = childProcess.fork(`${tigerPath}models/pluginNode.ts`);
+    this.process = childProcess.fork(`${tigerPath}models/pluginNode.js`);
 
     this.process.on('message', (m) => {
       this.messageHandler(m);

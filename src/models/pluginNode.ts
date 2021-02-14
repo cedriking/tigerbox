@@ -93,7 +93,18 @@ const executeNormal = (code: string, url: string, successCallback: Function, fai
 };
 
 const executeTiger = (code: string, url: string, successCallback: Function, failureCallback: Function) => {
-  const vm = require('vm');
+  console.log('executingTiger');
+  console.log(url);
+
+  let vm;
+  try {
+    vm = require('vm');
+  } catch(e) {
+    printError(e.stack);
+    failureCallback();
+    return;
+  }
+  
   const sandbox: Object = {};
   const expose = [
     'application',
@@ -118,7 +129,15 @@ const executeTiger = (code: string, url: string, successCallback: Function, fail
 };
 
 const loadLocal = (path: string) => {
-  return require('fs').readFileSync(path).toString();
+  let res = '';
+
+  try {
+    res = require('fs').readFileSync(path).toString();
+  } catch (e) {
+    console.error(e.stack);
+  }
+
+  return res;
 }
 
 const loadRemote = (url: string, successCallback: Function, failureCallback: Function) => {

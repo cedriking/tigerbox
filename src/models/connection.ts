@@ -1,5 +1,6 @@
 import BasicConnectionNode from './basicConnectionNode';
 import BasicConnectionWeb from './basicConnectionWeb';
+import Whenable from './whenable';
 
 export default class Connection {
   private platformConnection;
@@ -8,7 +9,7 @@ export default class Connection {
   private executeFailureCallback: Function = () => {};
   private messageHandler: Function = () => {};
 
-  constructor(tigerPath: string, platformInit, isNode: boolean) {
+  constructor(tigerPath: string, platformInit: Whenable, isNode: boolean) {
     if (isNode) {
       this.platformConnection = new BasicConnectionNode(tigerPath);
     } else {
@@ -44,11 +45,20 @@ export default class Connection {
     return this.platformConnection.dedicatedThread;
   }
 
-  importTigerScript(
+  importScript(
     path: string,
     successCallback: Function,
     failureCallback: Function,
   ) {
+    const f = () => {};
+    this.importCallbacks[path] = {
+      successCallback: successCallback || f,
+      failureCallback: failureCallback || f,
+    };
+    this.platformConnection.send({ type: 'import', url: path });
+  }
+
+  importTigerScript(path: string, successCallback: Function, failureCallback: Function) {
     const f = () => {};
     this.importCallbacks[path] = {
       successCallback: successCallback || f,

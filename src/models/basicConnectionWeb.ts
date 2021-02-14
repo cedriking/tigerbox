@@ -1,25 +1,25 @@
-import WhenAble from './whenable';
+import Whenable from './whenable';
 
 export default class BasicConnectionWeb {
   private permissions = ['allow-scripts'];
-  private init: WhenAble;
+  private init: Whenable;
   private frame;
-  private messageHandler: (m: string) => void = (m: string) => {};
+  private messageHandler: Function = (m: string) => {};
   private isDedicatedThread: boolean = true;
   private isDisconnected: boolean = false;
 
-  constructor(tigerPath: string, platformInit) {
+  constructor(tigerPath: string, platformInit: Whenable) {
     if (tigerPath.substr(0, 7).toLocaleLowerCase() === 'file://') {
       this.permissions.push('allow-same-origin');
     }
 
     const sample = document.createElement('iframe');
-    sample.src = `${tigerPath}frame.html`;
+    sample.src = `${tigerPath}web/frame.html`;
     // @ts-ignore
     sample.sandbox = permissions.join(' ');
     sample.style.display = 'none';
 
-    this.init = new WhenAble();
+    this.init = new Whenable();
     this.isDisconnected = false;
 
     platformInit.whenEmitted(() => {
@@ -49,7 +49,7 @@ export default class BasicConnectionWeb {
     this.frame.contentWindow.postMessage({ type: 'message', data }, '*');
   }
 
-  onMessage(handler) {
+  onMessage(handler: Function) {
     this.messageHandler(handler);
   }
 

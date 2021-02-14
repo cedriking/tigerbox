@@ -1,13 +1,11 @@
-import BasicConnectionNode from './models/basicConnectionNode';
-import BasicConnectionWeb from './models/basicConnectionWeb';
-import WhenAble from './models/whenable';
+import Whenable from './models/whenable';
 import { Plugin, DynamicPlugin } from './models/plugin';
 import Connection from './models/connection';
 
 export default class TigerBox {
   private isNode: boolean = false;
   private tigerPath: string;
-  private platformInit = new WhenAble();
+  private platformInit = new Whenable();
 
   constructor() {
     this.isNode =
@@ -43,7 +41,11 @@ export default class TigerBox {
   }
 
   private initNode() {
-    require(`${this.tigerPath}models/tigerboxSite.ts`);
+    try {
+      require(`${this.tigerPath}models/tigerboxSite.js`);
+    } catch (e) {
+      console.log(e.stack);
+    }
   }
 
   private initWeb() {

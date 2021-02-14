@@ -1,4 +1,4 @@
-export default class WhenAble {
+export default class Whenable {
   private emitted: boolean = false;
   private handlers: Function[] = [];
 

@@ -1,27 +1,27 @@
 import Connection from './connection';
 import tigerboxSite from './tigerboxSite';
 import TigerboxSite from './tigerboxSite';
-import WhenAble from './whenable';
+import Whenable from './whenable';
 
 class PluginParent {
   protected path: string;
   protected code: string;
   protected initialInterface: Object;
-  protected connect: WhenAble;
-  protected fail: WhenAble;
-  protected disconnect: WhenAble;
+  protected connect: Whenable;
+  protected fail: Whenable;
+  protected disconnect: Whenable;
   protected failureCallback: Function;
   protected connection: Connection;
   protected site: tigerboxSite;
   protected isConnected: boolean = false;
 
-  constructor(url: string, face: Object = {}, platformInit, isNode: boolean) {
+  constructor(url: string, api: Object = {}, platformInit: Whenable, isNode: boolean) {
     this.path = url;
-    this.initialInterface = face;
+    this.initialInterface = api;
 
-    this.connect = new WhenAble();
-    this.fail = new WhenAble();
-    this.disconnect = new WhenAble();
+    this.connect = new Whenable();
+    this.fail = new Whenable();
+    this.disconnect = new Whenable();
 
     this.failureCallback = () => {
       this.fail.emit();
@@ -46,8 +46,8 @@ class PluginParent {
 
 export class Plugin extends PluginParent {
 
-  constructor(url: string, face: Object = {}, platformInit, isNode: boolean) {
-    super(url, face, platformInit, isNode);
+  constructor(url: string, api: Object = {}, platformInit: Whenable, isNode: boolean) {
+    super(url, api, platformInit, isNode);
 
     this.connection.whenInit(() => {
       this.init();
@@ -59,8 +59,8 @@ export class Plugin extends PluginParent {
     this.site.onDisconnect(() => this.disconnect.emit());
 
     const successCallback = () => this.loadCore();
-    this.connection.importTigerScript(
-      `${this.path}models/tigerboxSite.ts`,
+    this.connection.importScript(
+      `${this.path}models/tigerboxSite.js`,
       successCallback,
       this.failureCallback,
     );
@@ -68,8 +68,8 @@ export class Plugin extends PluginParent {
 
   loadCore() {
     const successCallback = () => this.sendInterface();
-    this.connection.importTigerScript(
-      `${this.path}models/pluginCore.ts`,
+    this.connection.importScript(
+      `${this.path}models/pluginCore.js`,
       successCallback,
       this.failureCallback,
     );
@@ -116,8 +116,8 @@ export class Plugin extends PluginParent {
 }
 
 export class DynamicPlugin extends PluginParent {
-  constructor(url: string, code: string, face: Object = {}, platformInit, isNode: boolean) {
-    super(url, face, platformInit, isNode);
+  constructor(url: string, code: string, api: Object = {}, platformInit: Whenable, isNode: boolean) {
+    super(url, api, platformInit, isNode);
     this.code = code;
 
     this.connection.whenInit(() => {
@@ -128,10 +128,10 @@ export class DynamicPlugin extends PluginParent {
   init() {
     this.site = new TigerboxSite(this.connection);
     this.site.onDisconnect(() => this.disconnect.emit());
-
     const successCallback = () => this.loadCore();
-    this.connection.importTigerScript(
-      `${this.path}models/tigerboxSite.ts`,
+
+    this.connection.importScript(
+      `${this.path}models/tigerboxSite.js`,
       successCallback,
       this.failureCallback,
     );
@@ -139,8 +139,8 @@ export class DynamicPlugin extends PluginParent {
 
   loadCore() {
     const successCallback = () => this.sendInterface();
-    this.connection.importTigerScript(
-      `${this.path}models/pluginCore.ts`,
+    this.connection.importScript(
+      `${this.path}models/pluginCore.js`,
       successCallback,
       this.failureCallback,
     );
