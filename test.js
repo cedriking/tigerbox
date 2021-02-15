@@ -1,9 +1,9 @@
-const Tigerbox = require('./lib/tigerbox').default;
+const {TigerBox} = require('./lib/tigerbox');
 
-const tiger = new Tigerbox();
+const tiger = new TigerBox();
 
 const code = `function square() {return num*num;}`;
-const plugin = tiger.DynamicPlugin(code, { console: console });
+const plugin = tiger.newDynamicPlugin(code, { console: console });
 
 // called after the plugin is loaded
 const start = function () {

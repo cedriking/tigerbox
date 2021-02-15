@@ -1,19 +1,20 @@
-export default class Whenable {
-  private emitted: boolean = false;
-  private handlers: Function[] = [];
+export class Whenable {
+  private emitted = false;
+  private handlers = [];
 
   emit() {
-    if (!this.emitted) this.emitted = true;
+    if (!this.emitted) {
+      this.emitted = true;
 
-    let handler: Function;
-    while ((handler = this.handlers.pop())) {
-      setTimeout(handler, 0);
+      let handler: Function;
+      while ((handler = this.handlers.pop())) {
+        setTimeout(handler, 0);
+      }
     }
   }
 
   whenEmitted(handler: Function) {
     handler = this.checkHandler(handler);
-
     if (this.emitted) {
       setTimeout(handler, 0);
     } else {
@@ -25,7 +26,7 @@ export default class Whenable {
     const type = typeof handler;
     if (type !== 'function') {
       throw new Error(
-        `A function may only be subscribed to the event, ${type} was provided instead.`,
+        `Handler must be a function, ${type} was provided instead.`,
       );
     }
 

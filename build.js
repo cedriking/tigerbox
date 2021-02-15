@@ -41,7 +41,7 @@ const runBuild = async (doClean = false) => {
 
   build({
     entryPoints: [
-      './src/models/tigerboxSite.ts', 
+      './src/models/tigerSite.ts', 
       './src/models/pluginNode.ts', 
       './src/models/pluginCore.ts'
     ],

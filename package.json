@@ -23,13 +23,14 @@
   ],
   "browser": {
     "fs": false,
-    "child_process": false
+    "child_process": false,
+    "path": false
   },
   "scripts": {
     "build": "npm run buildnpm && node build.js",
     "buildnpm": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\"",
-    "test": "jest"
+    "test": "yarn build && node test.js"
   },
   "dependencies": {},
   "devDependencies": {
